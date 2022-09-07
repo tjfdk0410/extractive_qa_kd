@@ -444,7 +444,7 @@ class QuestionAnswering:
             "--student",
             type=str,
             default="qanet",
-            choices=["qanet"],
+            choices=["qanet", "albert"],
             help="Base model to be used as the student model"
         )
         parser.add_argument(
