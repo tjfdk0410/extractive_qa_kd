@@ -14,7 +14,7 @@ from .model.qanet import QANet
 from .model.qanet import QANetTokenizer
 from .model.qanet import QANetTrainer
 from .model.qanet import QANetEvaluator
-from .model.bert import BertX
+from .model.bert import ALBERT, BertX
 from .model.bert import BertTokenizerX
 from .module.ema import EMA
 
@@ -40,6 +40,14 @@ class QuestionAnswering:
                 self.teacher_tokenizer = BertTokenizerX(
                     teacher_tokenizer_or_path=self.config.teacher_tokenizer_or_path,
                 )
+            elif self.config.teacher == 'albert':
+                self.teacher_model = ALBERT(
+                    device=self.device,
+                    teacher_model_or_path=self.config.teacher_model_or_path,
+                )
+                self.teacher_tokenizer = BertTokenizerX(
+                    teacher_tokenizer_or_path=self.config.teacher_tokenizer_or_path,
+                )
             else:
                 raise Exception("Invalid teacher model")
 
@@ -47,6 +55,9 @@ class QuestionAnswering:
         self.student_tokenizer = None
         if self.config.student == "qanet":
             self.student_tokenizer = QANetTokenizer()
+        elif self.config.student == 'albert':
+            self.student_tokenizer = BertTokenizerX(
+            )
         else:
             raise Exception("Invalid student model")
 
@@ -92,6 +103,13 @@ class QuestionAnswering:
             self.dataset.eval_process()
 
         if self.config.student == "qanet":
+            if self.config.train:
+                self.qanet_train()
+            elif self.config.evaluate:
+                self.qanet_evaluate()
+            else:
+                raise Exception("Invalid operation")
+        elif self.config.student == 'albert':
             if self.config.train:
                 self.qanet_train()
             elif self.config.evaluate:
@@ -448,6 +466,19 @@ class QuestionAnswering:
             help="Base model to be used as the student model"
         )
         parser.add_argument(
+            "--student_model_or_path",
+            type=str,
+            default="albert-base-v2",
+            help="Student model's name or the path to a trained model directory"
+        )
+        parser.add_argument(
+            "--student_tokenizer_or_path",
+            type=str,
+            default="albert-base-v2",
+            help="Student tokenizer's name or the path to a trained model's \
+                tokenizer"
+        )
+        parser.add_argument(
             "--context_limit",
             type=int,
             default=512,
@@ -495,7 +526,7 @@ class QuestionAnswering:
             "--teacher",
             type=str,
             default="bert",
-            choices=["bert"],
+            choices=["bert", "albert"],
             help="Model to be used as the teacher model"
         )
         parser.add_argument(

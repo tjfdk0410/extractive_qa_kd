@@ -1,6 +1,7 @@
 from transformers import BertForQuestionAnswering
 from transformers import BertTokenizer
 
+from transformers import AutoTokenizer, AutoModel
 
 class BertTokenizerX:
 
@@ -35,3 +36,15 @@ class BertX:
         self.model = BertForQuestionAnswering.from_pretrained(
             teacher_model_or_path)
         self.model.to(self.device)
+
+
+class ALBERT:
+
+    def __init__(self,
+                 device,
+                 teacher_model_or_path):
+        self.device = device
+        self.model = AutoModel.from_pretrained(
+            teacher_model_or_path)
+        self.model.to(self.device)
+        

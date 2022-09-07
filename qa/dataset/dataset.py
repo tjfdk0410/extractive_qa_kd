@@ -607,7 +607,7 @@ class Dataset:
                             if t_start_index == 0:
                                 if debug:
                                     print("{:>6} JMP {} == {}".format(
-                                        i, s_str, t_str))
+                                        i, ss_str, t_str))
                                 return s_len-1-j, t_len-1-k, s_str, t_str
 
                             raise Exception(
@@ -634,7 +634,7 @@ class Dataset:
                             print('{:>6} ERR {:20}{:20}'.format(
                                 i, student_token, teacher_token))
                         # TODO You can skip `i` if there is an error
-                        raise Exception()
+                        # raise Exception()
 
             all_extracted_start_scores.append(start_scores)
             all_extracted_end_scores.append(end_scores)
